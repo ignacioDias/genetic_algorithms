@@ -6,32 +6,40 @@ class Graph:
         self.final_node = None
 
     def insert_path(self, origin, destination, cost):
-        if origin not in self.map:
-            self.map[origin] = {}
+        if origin not in self.nodes:
             self.nodes.append(origin)
-        if destination not in self.map:
+        if destination not in self.nodes:
             self.nodes.append(destination)
-            self.map[destination] = {}
-        self.map[origin][destination] = cost 
-        self.map[destination][origin] = cost
+        self.map[(origin, destination)] = cost 
+        self.map[(destination, origin)] = cost
     
     def valid_path(self, path):
-        if len(path) <= 1:
-            return True
-        # recorre pares consecutivos (u, v)
-        marked = {}
-        for u, v in zip(path, path[1:]):
-            if v not in self.get_neighbours(u):  # si no hay arista u-v
+        length = len(path)
+        if length != len(self.nodes) + 1:
+            print(self.nodes)
+            return False
+        marked = set()
+        starting_node_appareances = 0
+        for i in range(length - 1):
+            u = path[i]
+            v = path[i + 1]
+            if u == self.starting_node:
+                starting_node_appareances += 1
+                if starting_node_appareances > 2:
+                    return False
+            if not self.is_neighbour(u, v):
                 return False
             if u in marked and u != self.starting_node:
                 return False
             else:
                 marked.add(u)
-
         return True
     
-    def get_neighbours(self, node):
-        return list(self.map.get(node, {}).keys())
-    
     def is_neighbour(self, node1, node2):
-        return node1 in self.get_neighbours(node2)
+        return (node1, node2) in self.map
+    
+    def calculate_cost(self, path):
+        cost = 0
+        for i in range(len(path) - 1):
+            cost += self.map[(path[i], path[i + 1])]
+        return cost
