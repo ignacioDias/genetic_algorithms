@@ -1,5 +1,7 @@
 from deap import base, creator, tools, algorithms
 import random
+
+import numpy as np
 # 1. Crear clase de fitness y clase de individuo
 creator.create("FitnessMax", base.Fitness, weights=(1.0,))
 creator.create("Individual", list, fitness=creator.FitnessMax)
@@ -24,6 +26,21 @@ def main():
     random.seed(42)
     pop = toolbox.population(n=50) # Población inicial
     algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.2, ngen=20, verbose=True)
+    stats = tools.Statistics(lambda ind: ind.fitness.values[0])
+    stats.register("avg", np.mean)
+    stats.register("std", np.std)
+    stats.register("min", np.min)
+    stats.register("max", np.max)
+
+    hof = tools.HallOfFame(1)  # guarda el mejor histórico
+
+    pop, log = algorithms.eaSimple(pop, toolbox,
+                                cxpb=0.5, mutpb=0.2,
+                                ngen=20, stats=stats,
+                                halloffame=hof, verbose=True)
+
+    print("Mejor individuo:", hof[0], "Fitness:", hof[0].fitness.values[0])
 
 if __name__ == "__main__":
     main()
+    
