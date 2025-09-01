@@ -41,6 +41,8 @@ class Graph:
     def calculate_cost(self, path):
         cost = 0
         for i in range(len(path) - 1):
+            if not self.is_neighbour(path[i], path[i + 1]):
+                return -1
             cost += self.map[(path[i], path[i + 1])]
         return cost
     

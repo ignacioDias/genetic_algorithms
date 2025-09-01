@@ -4,7 +4,7 @@ POPULATION_SIZE = 20
 ITERATIONS = 40000
 CXPB = 0.8 # Probabilidad de cruce
 MUTPB = 0.05 # Probabilidad de mutación
-BIG_PENALITY = 1000
+BIG_PENALITY = 10000
 SMALL_PENALITY = 500
 GRAPH = Graph()
 
@@ -77,7 +77,7 @@ def fitness(individual):
         if (check_penality(u, marked[u])) > 0:
             penality += 50
         if not GRAPH.is_neighbour(u, v):
-            return SMALL_PENALITY
+            penality += SMALL_PENALITY
         
     marked[individual[-1]] += 1
     if (check_penality(individual[-1], marked[individual[-1]])) > 0:
@@ -107,11 +107,12 @@ def crossover(individual1, individual2):
     return individual1, individual2
 
 def mutate(individual):
+    mutant = individual[:]  
     if random.random() < MUTPB:
         i = random.randint(0, INDIVIDUAL_SIZE - 1)
-        # individual[i], individual[j] = individual[j], individual[i]
-        individual[i] = random.choice(GRAPH.nodes)
-    return individual
+        j = random.randint(0, INDIVIDUAL_SIZE - 1)
+        mutant[i], mutant[j] = mutant[j], mutant[i]
+    return mutant
 
 genetic_algorithm()
 #print(fitness([0, 7, 4, 3, 2, 8, 5, 6, 1, 0]))
